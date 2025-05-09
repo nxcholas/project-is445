@@ -198,7 +198,7 @@ export default function ManageCustomers() {
         console.log(query);
         const result = await sql.query(query, params);
         console.log("Query Results:", result);
-        setTable(result);
+        setTable(result as Customer[]);
         setSearched(true);
       } catch (err) {
         console.error(err);
