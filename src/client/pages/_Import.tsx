@@ -94,56 +94,73 @@ export default function _Import() {
     const inserted: number[] = [];
     const errorMessages: string[] = [];
     // -------- look for duplicates ------------
-    for (const customer of customers) {
-      try {
-        setLoading(true);
-        // sql query to check for duplicates
-        const sql = neon(DATABASEURL);
-        const existsQuery = `SELECT 1 FROM customer WHERE cusid = $1 LIMIT 1;`;
-        const existsResult = await sql.query(existsQuery, [customer.cusid]);
+// first pass: build `inserted` and `skipped`
+for (const customer of customers) {
+  try {
+    setLoading(true);
+    const sql = neon(DATABASEURL);
+    const existsQuery = `SELECT 1 FROM customer WHERE cusid = $1 LIMIT 1;`;
+    const existsResult = await sql.query(existsQuery, [customer.cusid]);
 
-        // push duplicates to duplicates array
-        if (existsResult && existsResult.length > 0) {
-          skipped.push(customer.cusid);
-          continue;
-        }
-        inserted.push(customer.cusid);
-      } catch (error: any) {
-        console.error("Full error object:", error);
-        skipped.push(customer.cusid);
-      } finally {
-        //  set states
-        setTotalRecords(
-          `Records Processed: ${inserted.length + skipped.length}`
-        );
-        setInserted(`Records inserted successfully: ${inserted.length}.`);
-        setSkipped(`Records not inserted: ${skipped.length}.`);
-        setSubmitted(true);
-        setLoading(false);
-      }
+    if (existsResult && existsResult.length > 0) {
+      skipped.push(customer.cusid);
+      continue;
     }
-    // -------------run query---------------------
-    const runQuery = async () => {
-      for (const customer of customers) {
-        try {
-          const sql = neon(DATABASEURL);
-          await sql`
-            INSERT INTO customer (cusid, cusfname, cuslname, cusstate, cussalesytd, cussalesprev)
-            VALUES (${customer.cusid}, ${customer.cusfname}, ${customer.cuslname},
-                    ${customer.cusstate}, ${customer.cussalesytd}, ${customer.cussalesprev})
-          `;
-        } catch (error) {
-          const message =
-            error instanceof Error ? error.message : String(error);
-          errorMessages.push(message);
-          setErrors((prev) => [...prev, error as NeonDbError]);
-          console.log(errorMessages);
-        }
-      }
-    };
-    // -------------------------------------------
-    runQuery();
-    fetchCustomerCount();
+    inserted.push(customer.cusid);
+
+  } catch (error: any) {
+    console.error("Full error object:", error);
+    skipped.push(customer.cusid);
+  } finally {
+    setTotalRecords(
+      `Records Processed: ${inserted.length + skipped.length}`
+    );
+    setInserted(`Records inserted successfully: ${inserted.length}.`);
+    setSkipped(`Records not inserted: ${skipped.length}.`);
+    setSubmitted(true);
+    setLoading(false);
+  }
+}
+
+// now only insert the valid ones:
+const runQuery = async () => {
+  // build a lookup from cusid → Customer object
+  const byId = new Map(customers.map((c) => [c.cusid, c]));
+
+  for (const cusid of inserted) {
+    const customer = byId.get(cusid)!;  // we know it exists
+    try {
+      const sql = neon(DATABASEURL);
+      await sql`
+        INSERT INTO customer
+          (cusid, cusfname, cuslname, cusstate, cussalesytd, cussalesprev)
+        VALUES
+          (${customer.cusid},
+           ${customer.cusfname},
+           ${customer.cuslname},
+           ${customer.cusstate},
+           ${customer.cussalesytd},
+           ${customer.cussalesprev})
+      `;
+      console.log("Inserted customer", cusid);
+    } catch (error: any) {
+      console.error("Insert error for", cusid, error);
+      setErrors((prev) => [
+        ...prev,
+        {
+          detail: error.detail || "",
+          message: error.message,
+          code: error.code,
+        } as NeonDbError,
+      ]);
+    }
+  }
+};
+
+// make sure to await it:
+await runQuery();
+await fetchCustomerCount();
+
   };
 
   return (

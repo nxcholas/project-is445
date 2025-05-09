@@ -146,6 +146,7 @@ export default function _CreateCustomer() {
         ) VALUES (`;
         if (whereClauses.length > 0) {
           query += `${whereClauses.join(", ")});`;
+          console.log(query);
         }
 
         // run query
