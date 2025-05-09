@@ -36,10 +36,17 @@ jobs:
         run: |
           npm run build # or the specific build command for your project
 
-      - name: Deploy to Azure Static Web Apps
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: "project-is445-static" # Update with your app's name
+          app-name: "zealous-pond-08c9f9f1e" # Update with your app's name
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }} # Add your Azure publish profile secret
           package: ./dist # Update if your build directory is different
 
