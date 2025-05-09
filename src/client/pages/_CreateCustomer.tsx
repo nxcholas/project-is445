@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { neon } from "@neondatabase/serverless";
-import dotenv from "dotenv";
 
 // ---------- components --------------
 import { Button } from "../components/button";
@@ -33,7 +32,6 @@ export default function _CreateCustomer() {
   const {
     register,
     handleSubmit,
-    control,
     reset,
     setValue,
     formState: { isDirty },
@@ -151,7 +149,7 @@ export default function _CreateCustomer() {
         }
 
         // run query
-        const result = await sql.query(query, params);
+        await sql.query(query, params);
         setCusCreated(true);
         console.log("Customer Created Successfully!")
       } catch (err) {

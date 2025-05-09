@@ -1,10 +1,10 @@
 // ----------req packages--------------
 import { useState, useEffect, useMemo } from "react";
 import { neon } from "@neondatabase/serverless";
-import dotenv from "dotenv";
+
 
 // ---------- hooks ------------------
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 // -----------------------------------
 
@@ -32,15 +32,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 // ---------- types --------------
-interface Customer {
-  cusid: number;
-  cusfname: string;
-  cuslname: string;
-  cusstate: string;
-  cussalesytd: number;
-  cussalesprev: number;
-}
-
 type FormValues = {
   id: number | null;
   firstName: string;
@@ -108,7 +99,6 @@ export default function _EditCustomer() {
     "WY",
   ] as const;
   // ------ states -------------------
-  const [customerid, setCusID] = useState("");
   const [cusfname, setCusFName] = useState("");
   const [cuslname, setCusLName] = useState("");
   const [cusstate, setCusState] = useState("");
@@ -127,18 +117,10 @@ export default function _EditCustomer() {
     },
   });
 
-  const defaultValues = {
-    id: null,
-    firstName: "",
-    lastName: "",
-    state: "",
-    salesYTD: null,
-    previousYearsSales: null,
-  };
   const watchedValues = watch();
   const isFullyFilled = useMemo(() => {
     // Check if all form fields have values
-    return Object.entries(watchedValues).every(([key, value]) => {
+    return Object.entries(watchedValues).every(([value]) => {
       // Ensure no field is null, empty string, or invalid value
       return (
         value !== null &&
@@ -163,7 +145,6 @@ export default function _EditCustomer() {
         const result = await sql.query(query, params);
         let user = result[0];
 
-        setCusID(result[0].cusid);
         setCusFName(result[0].cusfname);
         setCusLName(result[0].cuslname);
         setCusState(result[0].cusstate);
@@ -196,9 +177,6 @@ export default function _EditCustomer() {
   };
   const handleLNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCusLName(event.target.value);
-  };
-  const handleStateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCusState(event.target.value);
   };
   const handleSalesYTDChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCusSalesYTD(event.target.value);
@@ -248,7 +226,7 @@ export default function _EditCustomer() {
           console.log(query);
         }
         // ---- run query --------
-        const result = await sql.query(query, params);
+        await sql.query(query, params);
         console.log("Customer Updated Sucessfully!");
         setUpdateMessage("Customer Updated Successfully!");
       } catch (err) {

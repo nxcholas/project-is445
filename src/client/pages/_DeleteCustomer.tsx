@@ -1,7 +1,6 @@
 // ----------req packages--------------
 import { useState, useEffect } from "react";
 import { neon } from "@neondatabase/serverless";
-import dotenv from "dotenv";
 
 // ---------- hooks ------------------
 import { useParams } from "react-router-dom";
@@ -22,15 +21,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-// ---------- types --------------
-interface Customer {
-  cusid: number;
-  cusfname: string;
-  cuslname: string;
-  cusstate: string;
-  cussalesytd: number;
-  cussalesprev: number;
-}
 // -------------------------------
 
 export default function _DeleteCustomer() {

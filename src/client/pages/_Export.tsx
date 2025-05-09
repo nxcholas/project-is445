@@ -1,6 +1,5 @@
 // --------- req packages ----------------
 import { neon } from "@neondatabase/serverless";
-import dotenv from "dotenv";
 
 // ----------- Hooks --------------------
 import { useState, useEffect } from "react";
@@ -8,7 +7,6 @@ import { useState, useEffect } from "react";
 //  ---------- components ---------------
 import { Input } from "@/components/ui/input";
 import { Button } from "../components/button";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export default function _Export() {
   // -------- initial variables ----------
@@ -40,10 +38,10 @@ export default function _Export() {
   };
 
   // ---------- download handler ----------
-  const handleDownload = (data) => {
+  const handleDownload = (data: any) => {
     // Convert the data into CSV format
     const rows = data
-      .map((row) =>
+      .map((row: any) =>
         Object.values(row)
           .map((val) => `${val}`)
           .join(",")
@@ -58,7 +56,7 @@ export default function _Export() {
     link.click(); // Trigger the download
   };
   // ------- file name handler ---------
-  const handleFileName = (event) => {
+  const handleFileName = (event: any) => {
     setFileName(event.target.value);
   };
   // -------- on mount -------

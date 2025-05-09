@@ -1,6 +1,5 @@
 // --------- req packages ----------------
 import { neon } from "@neondatabase/serverless";
-import dotenv from "dotenv";
 
 // -------- page links -------------
 import _CreateCustomer from "./_CreateCustomer";
@@ -15,7 +14,6 @@ import { Link } from "react-router-dom";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -34,14 +32,6 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 // ------ Types -----------------
-
-interface ImportMetaEnv {
-  readonly VITE_DATABASE_URL: string;
-}
-
-interface ImportMeta {
-  readonly env: ImportMetaEnv;
-}
 
 interface Customer {
   cusid: number;
@@ -223,8 +213,6 @@ export default function ManageCustomers() {
     // Manually reset the Select UI
     setValue("state", "", { shouldDirty: false });
   };
-  // ---------table handlers----------
-  const handleDel = (customer: Customer) => {};
   // --------------------------------
 
   useEffect(() => {

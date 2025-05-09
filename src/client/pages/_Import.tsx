@@ -1,15 +1,15 @@
 // --------- req packages ----------------
 import { neon } from "@neondatabase/serverless";
-import dotenv from "dotenv";
+
 
 // ----------- Hooks --------------------
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+
 
 //  ---------- components ---------------
 import { Input } from "@/components/ui/input";
 import { Button } from "../components/button";
-import { Label } from "@radix-ui/react-select";
+
 import { Skeleton } from "@/components/ui/skeleton";
 // -----------types-------------------
 interface Customer {
@@ -58,7 +58,7 @@ export default function _Import() {
     fetchCustomerCount();
   }, []);
   // ------- handlers ---------
-  const handleFileUpload = (e) => {
+  const handleFileUpload = (e: any) => {
     // reset submitted state to false
     setSubmitted(false);
 
@@ -67,7 +67,7 @@ export default function _Import() {
 
     // --- read each line and store into array as objects ------
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = (event: any) => {
       const text = event.target.result;
       const lines = text.split(/\r?\n/);
       const parsedCustomers: Customer[] = lines.map((line) => {
@@ -87,7 +87,7 @@ export default function _Import() {
     reader.readAsText(file);
   };
   // ---- sql query ---------
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: any) => {
     // prevent default form behavior and reset submitted state
     e.preventDefault();
     setSubmitted(false);
