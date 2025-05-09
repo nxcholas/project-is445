@@ -10,7 +10,7 @@ on:
       - master
 
 permissions:
-  id-token: write
+  id-token: write  # Granting permission to write the id-token
 
 jobs:
   build_and_deploy_job:
@@ -22,42 +22,29 @@ jobs:
         with:
           submodules: true
           lfs: false
-
       - name: Set up Node.js 20.x
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
-
       - name: Verify Node.js version
         run: node -v
-
-      - name: Install Dependencies
-        run: |
-          npm install
-
-      - name: Build App
-        run: |
-          npm run build # or the specific build command for your project
-
       - name: Azure Login
         uses: azure/login@v1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}  # Add this line to specify the subscription ID
-        enable-AzPSSession: false
-        environment: azurecloud
-        allow-no-subscriptions: false
-        audience: api://AzureADTokenExchange
-        auth-type: SERVICE_PRINCIPAL
-
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          auth-type: "SERVICE_PRINCIPAL"  # Auth type for service principal
+      - name: Build and Deploy
+        id: builddeploy
+        uses: Azure/static-web-apps-deploy@v1
         with:
-          app-name: "zealous-pond-08c9f9f1e" # Update with your app's name
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }} # Add your Azure publish profile secret
-          package: ./dist # Update if your build directory is different
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "/"
+          api_location: ""
+          output_location: "dist"
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
@@ -68,5 +55,5 @@ jobs:
         id: closepullrequest
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_ZEALOUS_POND_08C9F9F1E }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           action: "close"
