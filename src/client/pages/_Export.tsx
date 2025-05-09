@@ -31,9 +31,9 @@ export default function _Export() {
     cusid,
     cusfname,
     cuslname,
-    cusstate,
+    
     cussalesytd::numeric AS cussalesytd,  
-    cussalesprev::numeric AS cusprevsales
+    cusprevsales::numeric AS cusprevsales
   FROM customer;
 `;
     return handleDownload(data);
