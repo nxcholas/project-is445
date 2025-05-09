@@ -20,7 +20,7 @@ interface Customer {
 }
 
 type NeonDbError = {
-  detail: string;
+  message: string;
   [key: string]: any; // allows other fields too
 };
 
@@ -190,7 +190,7 @@ export default function _Import() {
                 <div className="mt-4 text-zinc-500">
                   {errors.map((err, idx) => (
                     <p className="mt-4" key={idx}>
-                      {err.detail} {err.message}
+                      {err.message}
                     </p>
                   ))}
                 </div>
