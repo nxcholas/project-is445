@@ -21,7 +21,6 @@ interface Customer {
 
 type NeonDbError = {
   detail: string;
-  message: string;
   [key: string]: any; // allows other fields too
 };
 
@@ -85,80 +84,67 @@ export default function _Import() {
     };
     reader.readAsText(file);
   };
-// ---- sql query ---------
-const handleSubmit = async (e: any) => {
-  e.preventDefault();
-  setSubmitted(false);
-  const skipped: number[] = [];
-  const inserted: number[] = [];
-  const errorMessages: any[] = []; // Array to hold error objects
+  // ---- sql query ---------
+  const handleSubmit = async (e: any) => {
+    // prevent default form behavior and reset submitted state
+    e.preventDefault();
+    setSubmitted(false);
+    // --- initial vars ------
+    const skipped: number[] = [];
+    const inserted: number[] = [];
+    const errorMessages: string[] = [];
+    // -------- look for duplicates ------------
+    for (const customer of customers) {
+      try {
+        setLoading(true);
+        // sql query to check for duplicates
+        const sql = neon(DATABASEURL);
+        const existsQuery = `SELECT 1 FROM customer WHERE cusid = $1 LIMIT 1;`;
+        const existsResult = await sql.query(existsQuery, [customer.cusid]);
 
-  for (const customer of customers) {
-    try {
-      setLoading(true);
-
-      // Ensure cusid and sales values are valid
-      if (
-        isNaN(customer.cusid) ||
-        isNaN(customer.cussalesytd) ||
-        isNaN(customer.cussalesprev)
-      ) {
+        // push duplicates to duplicates array
+        if (existsResult && existsResult.length > 0) {
+          skipped.push(customer.cusid);
+          continue;
+        }
+        inserted.push(customer.cusid);
+      } catch (error: any) {
+        console.error("Full error object:", error);
         skipped.push(customer.cusid);
-        // Create an error object for invalid numeric data
-        errorMessages.push({
-          customerId: customer.cusid,
-          message: `Invalid numeric data for customer ID: ${customer.cusid}`,
-        });
-        continue;
+      } finally {
+        //  set states
+        setTotalRecords(
+          `Records Processed: ${inserted.length + skipped.length}`
+        );
+        setInserted(`Records inserted successfully: ${inserted.length}.`);
+        setSkipped(`Records not inserted: ${skipped.length}.`);
+        setSubmitted(true);
+        setLoading(false);
       }
-
-      // SQL query to check for duplicates
-      const sql = neon(DATABASEURL);
-      const existsQuery = `SELECT 1 FROM customer WHERE cusid = $1 LIMIT 1;`;
-      const existsResult = await sql.query(existsQuery, [customer.cusid]);
-
-      if (existsResult && existsResult.length > 0) {
-        skipped.push(customer.cusid);
-        continue;
-      }
-
-      // If no duplicate, insert the customer record
-      await sql`
-        INSERT INTO customer (cusid, cusfname, cuslname, cusstate, cussalesytd, cussalesprev)
-        VALUES (${customer.cusid}, ${customer.cusfname}, ${customer.cuslname},
-                ${customer.cusstate}, ${customer.cussalesytd}, ${customer.cussalesprev})
-      `;
-      inserted.push(customer.cusid);
-    } catch (error: any) {
-      console.error("Full error object:", error);
-      skipped.push(customer.cusid);
-      // Create an error object for the insertion failure
-      errorMessages.push({
-        customerId: customer.cusid,
-        message: `Error inserting customer ID: ${customer.cusid}`,
-        detail: error.message, // Include detailed error message from the exception
-      });
-    } finally {
-      // Update state with results
-      setTotalRecords(
-        `Records Processed: ${inserted.length + skipped.length}`
-      );
-      setInserted(`Records inserted successfully: ${inserted.length}.`);
-      setSkipped(`Records not inserted: ${skipped.length}.`);
-
-      // Set each error message object individually in the state
-      if (errorMessages.length > 0) {
-        setErrors(errorMessages); // State will contain an array of error objects
-      }
-
-      setSubmitted(true);
-      setLoading(false);
     }
-  }
-  fetchCustomerCount();
-};
-
-
+    // -------------run query---------------------
+    const runQuery = async () => {
+      for (const customer of customers) {
+        try {
+          const sql = neon(DATABASEURL);
+          await sql`
+            INSERT INTO customer (cusid, cusfname, cuslname, cusstate, cussalesytd, cussalesprev)
+            VALUES (${customer.cusid}, ${customer.cusfname}, ${customer.cuslname},
+                    ${customer.cusstate}, ${customer.cussalesytd}, ${customer.cussalesprev})
+          `;
+        } catch (error) {
+          const message =
+            error instanceof Error ? error.message : String(error);
+          errorMessages.push(message);
+          setErrors((prev) => [...prev, error as NeonDbError]);
+          console.log(errorMessages);
+        }
+      }
+    };
+    // -------------------------------------------
+    runQuery();
+    fetchCustomerCount();
+  };
 
   return (
     <div className="container pl-16 pt-8">
@@ -204,7 +190,7 @@ const handleSubmit = async (e: any) => {
                 <div className="mt-4 text-zinc-500">
                   {errors.map((err, idx) => (
                     <p className="mt-4" key={idx}>
-                      {err.message} 
+                      {err.detail} {err.message}
                     </p>
                   ))}
                 </div>
