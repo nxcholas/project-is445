@@ -30,8 +30,8 @@ export default function _Export() {
     cusfname,
     cuslname,
     
-    cussalesytd::INTEGER AS cussalesytd,  
-    cussalesprev::INTEGER AS cussalesprev
+    cussalesytd::NUMERIC::INTEGER AS cussalesytd,  
+    cussalesprev::NUMERIC::INTEGER AS cussalesprev
   FROM customer;
 `;
     return handleDownload(data);
