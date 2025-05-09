@@ -1,5 +1,5 @@
 // ----------req packages--------------
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { neon } from "@neondatabase/serverless";
 
 // ---------- hooks ------------------
@@ -73,7 +73,7 @@ export default function _DeleteCustomer() {
 
       // run query
       console.log(query);
-      const result = await sql.query(query, params);
+      await sql.query(query, params);
       setDelMessage("Customer Deleted Successfully!")
     } catch (err) {
       console.error(err);

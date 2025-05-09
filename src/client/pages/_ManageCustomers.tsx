@@ -52,7 +52,7 @@ type FormValues = {
 };
 
 export default function ManageCustomers() {
-  const [table, setTable] = useState([]);
+  const [table, setTable] = useState<Record<string, any>[]>([]);
   const [searched, setSearched] = useState(false);
   const states = [
     "AL",

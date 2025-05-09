@@ -1,10 +1,8 @@
 // --------- req packages ----------------
 import { neon } from "@neondatabase/serverless";
 
-
 // ----------- Hooks --------------------
 import { useState, useEffect } from "react";
-
 
 //  ---------- components ---------------
 import { Input } from "@/components/ui/input";
@@ -70,7 +68,7 @@ export default function _Import() {
     reader.onload = (event: any) => {
       const text = event.target.result;
       const lines = text.split(/\r?\n/);
-      const parsedCustomers: Customer[] = lines.map((line) => {
+      const parsedCustomers: Customer[] = lines.map((line: any) => {
         const [cusid, cusfname, cuslname, cusstate, cussalesytd, cussalesprev] =
           line.split(",");
         return {
@@ -135,10 +133,12 @@ export default function _Import() {
                     ${customer.cusstate}, ${customer.cussalesytd}, ${customer.cussalesprev})
           `;
         } catch (error) {
-          errorMessages.push(error);
+          const message =
+            error instanceof Error ? error.message : String(error);
+          errorMessages.push(message);
           setErrors((prev) => [...prev, error as NeonDbError]);
           console.log(errorMessages);
-        } 
+        }
       }
     };
     // -------------------------------------------
@@ -189,9 +189,7 @@ export default function _Import() {
               {errors.length > 0 && (
                 <div className="mt-4 text-zinc-500">
                   {errors.map((err, idx) => (
-                    <p
-                    className="mt-4" 
-                    key={idx}>
+                    <p className="mt-4" key={idx}>
                       {err.detail} {err.message}
                     </p>
                   ))}

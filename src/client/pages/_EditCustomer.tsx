@@ -2,7 +2,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { neon } from "@neondatabase/serverless";
 
-
 // ---------- hooks ------------------
 import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -264,8 +263,9 @@ export default function _EditCustomer() {
             placeholder={cusfname}
             className="text-white"
             required
-            onChange={handleFNameChange}
-            {...register("firstName")}
+            {...register("firstName", {
+              onChange: handleFNameChange,
+            })}
           />
         </label>
 
@@ -277,8 +277,9 @@ export default function _EditCustomer() {
             placeholder={cuslname}
             className="text-white"
             required
-            onChange={handleLNameChange}
-            {...register("lastName")}
+            {...register("firstName", {
+              onChange: handleLNameChange,
+            })}
           />
         </label>
 
@@ -319,12 +320,13 @@ export default function _EditCustomer() {
             placeholder={cussalesytd}
             className="text-white"
             required
-            onChange={handleSalesYTDChange}
             step={0.01}
-            {...register("salesYTD", { valueAsNumber: true })}
+            {...register("salesYTD", {
+              valueAsNumber: true,
+              onChange: handleSalesYTDChange,
+            })}
           />
         </label>
-
         {/* Previous Years Sales */}
         <label className="text-white text-lg font-semibold">
           Previous Years Sales:
@@ -333,9 +335,11 @@ export default function _EditCustomer() {
             placeholder={cussalesprev}
             className="text-white mb-5"
             required
-            onChange={handleSalesPrev}
             step={0.01}
-            {...register("previousYearsSales", { valueAsNumber: true })}
+            {...register("previousYearsSales", {
+              valueAsNumber: true,
+              onChange: handleSalesPrev,
+            })}
           />
         </label>
         <AlertDialog>
