@@ -70,5 +70,5 @@ jobs:
         with:
           app-name: 'projectfinal-is445'
           slot-name: 'Production'
-          package: release.zip
+          package: dist
           
