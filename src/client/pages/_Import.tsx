@@ -92,7 +92,6 @@ export default function _Import() {
     // --- initial vars ------
     const skipped: number[] = [];
     const inserted: number[] = [];
-    const errorMessages: string[] = [];
     // -------- look for duplicates ------------
     // first pass: build `inserted` and `skipped`
     for (const customer of customers) {
