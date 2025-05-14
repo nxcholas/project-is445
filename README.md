@@ -32,18 +32,18 @@
 
 ###
 
-<p align="left">https://neon.tech/docs/serverless/serverless-driver<br>The Neon serverless driver is a low-latency Postgres driver for JavaScript and TypeScript that allows you to query data from serverless and edge environments over HTTP or WebSockets in place of TCP.</p>
-
-###
-
 <h2 align="left">Neon's Serverless Functions || Express</h2>
 
 ###
 
-<p align="left">https://react-hook-form.com/<br>React-Hook-Form was used to extract data from inputted form fields into key-value pairs to be used in SQL queries.</p>
+<p align="left">https://neon.tech/docs/serverless/serverless-driver<br>The Neon serverless driver is a low-latency Postgres driver for JavaScript and TypeScript that allows you to query data from serverless and edge environments over HTTP or WebSockets in place of TCP.</p>
 
 ###
 
 <h2 align="left">React-Hook-Form</h2>
+
+###
+
+<p align="left">https://react-hook-form.com/<br>React-Hook-Form was used to extract data from inputted form fields into key-value pairs to be used in SQL queries.</p>
 
 ###
